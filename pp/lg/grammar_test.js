@@ -3,6 +3,9 @@
  * @fileoverview
  */
 
-suite('pp.ll.grammar', function() {
-
-});
+var g = new pp.lg.Grammar([
+    'A->Bc|a',
+    'B->A|C|d',
+    'C->B|D',
+    'D->e'
+], 'S', ['c', 'a', 'd', 'e'], ['A', 'B', 'C', 'D']);

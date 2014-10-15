@@ -49,7 +49,7 @@ pp.lg.Grammar = function(P, S, T, N) {
      *
      * @type {pp.lg.Symbol}
      */
-    this.start = goog.asserts.assertInstanceof(S, pp.lg.Symbol, 'S is not defined as a nonterminal');
+    this.start = goog.asserts.assertInstanceof(S, pp.lg.Symbol, 'S is not defined in set on nonterminals');
 };
 
 /**
@@ -129,4 +129,13 @@ pp.lg.Grammar.prototype.initAlphabet = function(terms, nonTerms) {
     this.nonTerms_.close();
 
     return alphabet;
+};
+
+pp.lg.Grammar.prototype.first = function() {
+
+
+};
+
+pp.lg.Grammar.prototype.follow = function() {
+
 };

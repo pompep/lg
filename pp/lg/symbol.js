@@ -5,6 +5,8 @@
 
 goog.provide('pp.lg.Symbol');
 
+goog.require('pp.lg.String');
+
 /**
  *
  * @param {string} id
@@ -31,6 +33,13 @@ pp.lg.Symbol = function(id, terminal) {
 };
 
 /**
+ * @returns {boolean}
+ */
+pp.lg.Symbol.prototype.isTerminal = function() {
+    return this.terminal_;
+};
+
+/**
  * @returns {string}
  */
 pp.lg.Symbol.prototype.getId = function() {
@@ -38,8 +47,32 @@ pp.lg.Symbol.prototype.getId = function() {
 };
 
 /**
- * @returns {boolean}
+ * @return {number}
  */
-pp.lg.Symbol.prototype.isTerminal = function() {
-    return this.terminal_;
+pp.lg.Identificable.prototype.length = function() {
+    return 1;
+};
+
+/**
+ * @param {number} index
+ * @return {pp.lg.Symbol}
+ */
+pp.lg.Symbol.prototype.getSymbolAt = function(index) {
+    return this;
+};
+
+/**
+ * @param {pp.lg.Identificable} b
+ * @return {pp.lg.Identificable}
+ */
+pp.lg.Symbol.prototype.concat = function(b) {
+    if (goog.isNull(b)) {
+        return this;
+    } else {
+        var ret = new pp.lg.String();
+        ret.append(this);
+        ret.concat(b);
+
+        return ret;
+    }
 };
