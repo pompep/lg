@@ -5,6 +5,7 @@
 
 goog.provide('pp.lg.Symbol');
 
+goog.require('pp.lg.Identificable');
 goog.require('pp.lg.String');
 
 /**
@@ -49,7 +50,7 @@ pp.lg.Symbol.prototype.getId = function() {
 /**
  * @return {number}
  */
-pp.lg.Identificable.prototype.length = function() {
+pp.lg.Symbol.prototype.length = function() {
     return 1;
 };
 
@@ -71,8 +72,27 @@ pp.lg.Symbol.prototype.concat = function(b) {
     } else {
         var ret = new pp.lg.String();
         ret.append(this);
-        ret.concat(b);
-
+        ret = ret.concat(b);
+//        console.log('symbol concat', this.toString(), b.toString(), ret.toString());
         return ret;
     }
+};
+
+/**
+ * @param {number} k
+ * @return {pp.lg.Identificable}
+ */
+pp.lg.Symbol.prototype.first = function(k) {
+    if (k > 0) {
+        return this;
+    } else {
+        return null;
+    }
+};
+
+/**
+ * @return {string}
+ */
+pp.lg.Symbol.prototype.toString = function() {
+    return '[' + this.getId()  + ']';
 };

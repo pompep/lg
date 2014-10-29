@@ -1,0 +1,17 @@
+{
+  "name": "lg",
+  "version": "0.0.0",
+  "homepage": "https://github.com/pompep/lg",
+  "authors": [
+    "Patrik Pompe <patrik.pompe@gmail.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

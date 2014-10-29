@@ -37,3 +37,8 @@ pp.lg.Identificable.prototype.getSymbolAt = function(index) {};
  * @return {pp.lg.Identificable}
  */
 pp.lg.Identificable.prototype.first = function(k) {};
+
+/**
+ * @return {string}
+ */
+pp.lg.Identificable.prototype.toString = function() {};

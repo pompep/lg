@@ -5,6 +5,8 @@
 
 goog.provide('pp.lg.String');
 
+goog.require('pp.lg.Identificable');
+
 /**
  *
  * @param {string=} str
@@ -13,7 +15,6 @@ goog.provide('pp.lg.String');
  * @implements {pp.lg.Identificable}
  */
 pp.lg.String = function(str, alphabet) {
-
     /**
      * @type {!Array.<pp.lg.Symbol>}
      * @private
@@ -32,7 +33,7 @@ pp.lg.String = function(str, alphabet) {
 };
 
 /**
- * @param {*} symbol takes every type, but only pp.lg.String are really appended, even empty symbol (aka null) is refused
+ * @param {*} symbol takes every type, but only pp.lg.Symbol are really appended, even empty symbol (aka null) is refused
  */
 pp.lg.String.prototype.append = function(symbol) {
     if (symbol instanceof pp.lg.Symbol) {
@@ -59,12 +60,12 @@ pp.lg.String.prototype.getId = function() {
  * @return {pp.lg.String}
  */
 pp.lg.String.prototype.concat = function(b) {
-    var ret = new pp.lg.String();
+    var ret = this.clone();
 
     for (var i = 0, len = b.length(); i < len; i++) {
         ret.append(b.getSymbolAt(i));
     }
-
+//    console.log('strconcat', this.getId(), b.getId(), ret.getId());
     return ret;
 };
 
@@ -80,7 +81,7 @@ pp.lg.String.prototype.length = function() {
  * @return {pp.lg.Symbol}
  */
 pp.lg.String.prototype.getSymbolAt = function(index) {
-    goog.asserts.assert(index > 0 && index < this.str_.length, 'Index out of String range');
+    goog.asserts.assert(index >= 0 && index < this.str_.length, 'Index out of String range');
     return this.str_[index];
 };
 
@@ -89,19 +90,45 @@ pp.lg.String.prototype.getSymbolAt = function(index) {
  * @return {pp.lg.Identificable}
  */
 pp.lg.String.prototype.first = function(k) {
+    var ret;
+
     switch(k) {
         case 0:
-            return null;
+            ret = null;
             break;
         case 1:
-            return this.getSymbolAt(0);
+            ret = this.getSymbolAt(0);
             break;
         default:
             var nk = Math.min(k, this.length());
+            ret = new pp.lg.String();
 
             for (var i = 0;  i < nk; i++) {
-                this.append(this.getSymbolAt(i));
+                ret.append(this.getSymbolAt(i));
             }
         ;
     }
+
+    return ret;
+};
+
+
+/**
+ * @return {pp.lg.String}
+ */
+pp.lg.String.prototype.clone = function() {
+    var ret = new pp.lg.String();
+
+    for (var i = 0, len = this.length(); i < len; i++) {
+        ret.append(this.getSymbolAt(i));
+    }
+
+    return ret;
+};
+
+/**
+ * @return {string}
+ */
+pp.lg.String.prototype.toString = function() {
+    return '"' + this.getId() + '"';
 };

@@ -6,10 +6,13 @@
 goog.provide('pp.lg.Grammar');
 
 goog.require('goog.string');
+goog.require('goog.asserts');
 
+goog.require('pp.lg.Symbol');
 goog.require('pp.lg.Rule');
 goog.require('pp.lg.Set');
-goog.require('pp.lg.Symbol');
+goog.require('pp.lg.FixedPointTable');
+
 
 /**
  * TODO automaticky rozpoznavat z pravidel? a udelat nepovinne parametry S N T
@@ -49,7 +52,7 @@ pp.lg.Grammar = function(P, S, T, N) {
      *
      * @type {pp.lg.Symbol}
      */
-    this.start = goog.asserts.assertInstanceof(S, pp.lg.Symbol, 'S is not defined in set on nonterminals');
+    this.start = goog.asserts.assertInstanceof(this.nonTerms_.getById(S), pp.lg.Symbol, 'S is not defined in set on nonterminals');
 };
 
 /**
@@ -131,11 +134,90 @@ pp.lg.Grammar.prototype.initAlphabet = function(terms, nonTerms) {
     return alphabet;
 };
 
-pp.lg.Grammar.prototype.first = function() {
+/**
+ * @param {string} str
+ * @param {number} k
+ * @return {pp.lg.Set}
+ */
+pp.lg.Grammar.prototype.first = function(str, k) {
+    goog.asserts.assert(k >= 0, 'k should be >= 0');
 
+    var alpha = new pp.lg.String(str, this.alphabet_),
+        firsts = [],
+        fixedPointTable = new pp.lg.FixedPointTable(this, alpha, k)
+    ;
 
+    for (var i = 0, len = alpha.length(); i < len; i++) {
+        firsts.push(this.firstOfSymbol(alpha.getSymbolAt(i), fixedPointTable));
+    }
+
+    var ret = firsts[0];
+
+    for (var j = 1, len = firsts.length; j < len; j++) {
+        ret = ret.kConcat(firsts[j], k);
+    }
+
+    return ret;
 };
 
-pp.lg.Grammar.prototype.follow = function() {
+/**
+ *
+ * @param {pp.lg.Symbol} symbol
+ * @param {pp.lg.FixedPointTable} fixedPointTable
+ * @return {pp.lg.Set}
+ * @private
+ */
+pp.lg.Grammar.prototype.firstOfSymbol = function(symbol, fixedPointTable) {
+    var ret;
 
+    if (symbol.isTerminal()) {
+        ret = new pp.lg.Set();
+        ret.add(symbol);
+    } else {
+        ret = fixedPointTable.get(symbol);
+    }
+
+    return ret;
+};
+
+//pp.lg.Grammar.prototype.fixedPointTable = function() {
+//    var ret = {},
+//        nonTerms = this.nonTerms_.asArray()
+//    ;
+//
+//    for (var i = 0, len = nonTerms.length; i < len; i++) {
+//        ret
+//
+//    }
+//
+//    return ret;
+//};
+
+/**
+ *
+ * @param {string} nonTerm
+ * @return {pp.lg.Set}
+ */
+pp.lg.Grammar.prototype.follow = function(nonTerm) {
+    var ret = new pp.lg.Set();
+    return ret;
+};
+
+/**
+ *
+ * @param leftTerm
+ * @return {!Array.<pp.lg.Rule>}
+ */
+pp.lg.Grammar.prototype.getRulesWithLeftEqual = function(leftTerm) {
+    var ret = [];
+
+    for (var i = 0, len = this.rules_.length; i < len; i++) {
+        var rule = this.rules_[i];
+
+        if (rule.leftIsEqual(leftTerm)) {
+            ret.push(rule);
+        }
+    }
+
+    return ret;
 };

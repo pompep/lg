@@ -5,7 +5,7 @@
 
 goog.provide('pp.lg.Rule');
 
-goog.require('pp.lg.string');
+goog.require('pp.lg.String');
 
 /**
  *
@@ -26,4 +26,27 @@ pp.lg.Rule = function(left, right) {
      * @private
      */
     this.right_ = right;
+};
+
+/**
+ *
+ * @param {pp.lg.Identificable} left
+ * @return {boolean}
+ */
+pp.lg.Rule.prototype.leftIsEqual = function(left) {
+    return this.left_.getId() === left.getId();
+};
+
+/**
+ * @return {pp.lg.String}
+ */
+pp.lg.Rule.prototype.getRight = function() {
+    return this.right_;
+};
+
+/**
+ * @return {string}
+ */
+pp.lg.Rule.prototype.toString = function() {
+    return this.left_.getId() + '->' + this.right_.getId();
 };

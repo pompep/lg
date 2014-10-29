@@ -12,7 +12,7 @@ goog.require('goog.object');
  */
 pp.lg.Set = function() {
     /**
-     * @type {Object.<string, !pp.lg.Identificable>} symbol.id => symbol
+     * @type {Object.<string, pp.lg.Identificable>} symbol.id => symbol
      * @private
      */
     this.set_ = {};
@@ -31,18 +31,33 @@ pp.lg.Set = function() {
  * @return {boolean} was symbol inserted firstime?
  */
 pp.lg.Set.prototype.add = function(symbol) {
+    var ret = false;
+
     if (!this.closed_) {
-        if (symbol.getId() in this.set_) {
-            return false;
-        } else {
-            this.set_[symbol.getId()] = symbol;
-            return true;
+        var id = goog.isNull(symbol) ? '' : symbol.getId();
+
+        if (!(id in this.set_)) {
+            this.set_[id] = symbol;
+            ret = true;
         }
     } else {
         goog.asserts.fail('Set is already closed against add operation');
     }
+
+    return ret;
 };
 
+/**
+ * @return {number}
+ */
+pp.lg.Set.prototype.size = function() {
+    return goog.object.getCount(this.set_);
+};
+
+/**
+ *
+ * @return {!Array.<pp.lg.Identificable>}
+ */
 pp.lg.Set.prototype.asArray = function() {
     return goog.object.getValues(this.set_);
 };
@@ -53,7 +68,7 @@ pp.lg.Set.prototype.asArray = function() {
  * @returns {pp.lg.Identificable}
  */
 pp.lg.Set.prototype.getById = function(id) {
-    return goog.object.get(this.set_, id, null);
+    return /** @type {pp.lg.Identificable}*/ (goog.object.get(this.set_, id, null));
 };
 
 
@@ -74,18 +89,23 @@ pp.lg.Set.prototype.isClosed = function() {
  * @return {pp.lg.Set}
  */
 pp.lg.Set.prototype.concat = function(setB) {
-    var res = new  pp.lg.Set();
+    var res = new pp.lg.Set(),
+        aArr = this.asArray(),
+        bArr = setB.asArray()
+    ;
 
-    for (var aId in this.set_) {
-        var a = this.getById(aId);
+    for (var i = 0, len = aArr.length; i < len; i++) {
+        var a = aArr[i];
 
-        for (var bId in setB) {
-            var b = this.getById(bId);
-
-            res.push(a.concat(b));
+        for (var j = 0, ll = bArr.length; j < ll; j++) {
+            var b = bArr[j],
+                concatStr = a.concat(b)
+            ;
+//            console.log('set concat', b.toString(), a.toString(), concatStr.toString());
+            res.add(concatStr);
         }
     }
-
+//    console.log(this.toString() + ' concat ' + setB.toString()+ ' = '+ res.toString());
     return res;
 };
 
@@ -102,14 +122,15 @@ pp.lg.Set.prototype.union = function(setB) {
     for (var i = 0, len = b.length; i < len; i++) {
         ret.add(b[i]);
     }
-
+//    console.log(this.toString() + ' U '+ setB.toString()+ ' = '+ ret.toString());
     return ret;
 };
 
 /**
  * {w.first(k) | w in this.concat(setB)}
- * @param (pp.lg.Set) setB
- * @param (int) k
+ * @param {pp.lg.Set} setB
+ * @param {number} k
+ * @return {pp.lg.Set}
  */
 pp.lg.Set.prototype.kConcat = function(setB, k) {
     var concat = this.concat(setB),
@@ -121,7 +142,7 @@ pp.lg.Set.prototype.kConcat = function(setB, k) {
         var s = concats[i];
         ret.add(s.first(k));
     }
-
+//    console.log(this.toString() + ' concat_'+k +' ' + setB.toString()+ ' = '+ ret.toString());
     return ret;
 };
 
@@ -135,6 +156,44 @@ pp.lg.Set.prototype.clone = function() {
     for (var sId in this.set_) {
         ret.add(this.set_[sId]);
     }
+
+    return ret;
+};
+
+/**
+ *
+ * @param {pp.lg.Set} setB
+ * @return {boolean}
+ */
+pp.lg.Set.prototype.equal = function(setB) {
+    var elements = this.asArray(),
+        ret = this.size() === setB.size()
+    ;
+
+    for (var i = 0, len = elements.length; ret && (i < len); i++) {
+        ret = setB.contains(elements[i]);
+    }
+
+    return ret;
+};
+
+/**
+ *
+ * @param {pp.lg.Identificable} element
+ * @return {boolean}
+ */
+pp.lg.Set.prototype.contains = function(element) {
+    return goog.object.containsKey(this.set_, element.getId());
+};
+
+pp.lg.Set.prototype.toString = function() {
+    var ret = '{';
+
+    for (var id in this.set_) {
+        ret += id + ','
+    }
+
+    ret += '}';
 
     return ret;
 };
