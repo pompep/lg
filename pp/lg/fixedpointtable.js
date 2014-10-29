@@ -126,13 +126,21 @@ pp.lg.FixedPointTable.prototype.parseNonTermEq = function(s, G, k) {
         }
 
         ruleFcns.push(goog.bind(function(rsequas) {
-            var kConcat = rsequas[0]();
+            var ret;
+            if (rsequas.length > 0) {
+                var kConcat = rsequas[0]();
 
-            for (var m1 = 1, l1 = rsequas.length; m1 < l1; m1++) {
-                kConcat = kConcat.kConcat(rsequas[m1](), k);
+                for (var m1 = 1, l1 = rsequas.length; m1 < l1; m1++) {
+                    kConcat = kConcat.kConcat(rsequas[m1](), k);
+                }
+
+                ret = kConcat;
+            } else {
+                ret = new pp.lg.Set();
+                ret.add(null);
             }
 
-            return kConcat;
+            return ret;
         }, this, symbolFcns));
     }
 

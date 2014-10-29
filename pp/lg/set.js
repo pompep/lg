@@ -99,13 +99,13 @@ pp.lg.Set.prototype.concat = function(setB) {
 
         for (var j = 0, ll = bArr.length; j < ll; j++) {
             var b = bArr[j],
-                concatStr = a.concat(b)
+                concatStr = goog.isNull(a) ? b : a.concat(b)
             ;
-//            console.log('set concat', b.toString(), a.toString(), concatStr.toString());
+
             res.add(concatStr);
         }
     }
-//    console.log(this.toString() + ' concat ' + setB.toString()+ ' = '+ res.toString());
+//console.log(this.toString() + ' concat ' + setB.toString()+ ' = '+ res.toString());
     return res;
 };
 
@@ -140,7 +140,7 @@ pp.lg.Set.prototype.kConcat = function(setB, k) {
 
     for (var i = 0, len = concats.length; i < len; i++) {
         var s = concats[i];
-        ret.add(s.first(k));
+        ret.add(goog.isNull(s) ? s : s.first(k));
     }
 //    console.log(this.toString() + ' concat_'+k +' ' + setB.toString()+ ' = '+ ret.toString());
     return ret;
@@ -183,7 +183,8 @@ pp.lg.Set.prototype.equal = function(setB) {
  * @return {boolean}
  */
 pp.lg.Set.prototype.contains = function(element) {
-    return goog.object.containsKey(this.set_, element.getId());
+    var key = goog.isNull(element) ? '' : element.getId(); // key of empty string
+    return goog.object.containsKey(this.set_, key);
 };
 
 pp.lg.Set.prototype.toString = function() {

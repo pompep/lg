@@ -180,27 +180,16 @@ pp.lg.Grammar.prototype.firstOfSymbol = function(symbol, fixedPointTable) {
     return ret;
 };
 
-//pp.lg.Grammar.prototype.fixedPointTable = function() {
-//    var ret = {},
-//        nonTerms = this.nonTerms_.asArray()
-//    ;
-//
-//    for (var i = 0, len = nonTerms.length; i < len; i++) {
-//        ret
-//
-//    }
-//
-//    return ret;
-//};
-
 /**
  *
- * @param {string} nonTerm
+ * @param {string} nonTermId
+ * @param {number} k
  * @return {pp.lg.Set}
  */
-pp.lg.Grammar.prototype.follow = function(nonTerm) {
-    var ret = new pp.lg.Set();
-    return ret;
+pp.lg.Grammar.prototype.follow = function(nonTermId, k) {
+    var nonTerm = goog.asserts.assertInstanceof(this.nonTerms_.getById(nonTermId), pp.lg.Symbol, nonTermId + ' is not in nonterminals set');
+
+
 };
 
 /**

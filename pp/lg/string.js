@@ -60,12 +60,19 @@ pp.lg.String.prototype.getId = function() {
  * @return {pp.lg.String}
  */
 pp.lg.String.prototype.concat = function(b) {
-    var ret = this.clone();
+    var ret;
 
-    for (var i = 0, len = b.length(); i < len; i++) {
-        ret.append(b.getSymbolAt(i));
+    if (goog.isNull(b)) {
+        ret = new pp.lg.String();
+        ret.append(b);
+    } else {
+        ret = this.clone();
+
+        for (var i = 0, len = b.length(); i < len; i++) {
+            ret.append(b.getSymbolAt(i));
+        }
     }
-//    console.log('strconcat', this.getId(), b.getId(), ret.getId());
+//    console.log('strconcat', this.toString(), goog.isNull(b) ? null : b.toString(), ret.toString());
     return ret;
 };
 
