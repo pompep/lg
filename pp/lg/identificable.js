@@ -42,3 +42,9 @@ pp.lg.Identificable.prototype.first = function(k) {};
  * @return {string}
  */
 pp.lg.Identificable.prototype.toString = function() {};
+
+/**
+ * @param {pp.lg.Identificable} b
+ * @return {boolean}
+ */
+pp.lg.Identificable.prototype.equals = function(b) {};

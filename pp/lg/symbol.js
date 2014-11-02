@@ -41,30 +41,28 @@ pp.lg.Symbol.prototype.isTerminal = function() {
 };
 
 /**
- * @returns {string}
+ * @inheritDoc
  */
 pp.lg.Symbol.prototype.getId = function() {
     return this.id_;
 };
 
 /**
- * @return {number}
+ * @inheritDoc
  */
 pp.lg.Symbol.prototype.length = function() {
     return 1;
 };
 
 /**
- * @param {number} index
- * @return {pp.lg.Symbol}
+ * @inheritDoc
  */
 pp.lg.Symbol.prototype.getSymbolAt = function(index) {
     return this;
 };
 
 /**
- * @param {pp.lg.Identificable} b
- * @return {pp.lg.Identificable}
+ * @inheritDoc
  */
 pp.lg.Symbol.prototype.concat = function(b) {
     if (goog.isNull(b)) {
@@ -79,8 +77,7 @@ pp.lg.Symbol.prototype.concat = function(b) {
 };
 
 /**
- * @param {number} k
- * @return {pp.lg.Identificable}
+ * @inheritDoc
  */
 pp.lg.Symbol.prototype.first = function(k) {
     if (k > 0) {
@@ -91,7 +88,14 @@ pp.lg.Symbol.prototype.first = function(k) {
 };
 
 /**
- * @return {string}
+ * @inheritDoc
+ */
+pp.lg.Symbol.prototype.equals = function(b) {
+    return goog.isNull(b) ? false : this.getId() === b.getId();
+};
+
+/**
+ * @inheritDoc
  */
 pp.lg.Symbol.prototype.toString = function() {
     return '[' + this.getId()  + ']';

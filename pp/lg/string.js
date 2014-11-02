@@ -42,7 +42,7 @@ pp.lg.String.prototype.append = function(symbol) {
 };
 
 /**
- * @returns {string}
+ * @inheritDoc
  */
 pp.lg.String.prototype.getId = function() {
     var ret = '';
@@ -56,8 +56,7 @@ pp.lg.String.prototype.getId = function() {
 };
 
 /**
- * @param {pp.lg.Identificable} b
- * @return {pp.lg.String}
+ * @inheritDoc
  */
 pp.lg.String.prototype.concat = function(b) {
     var ret;
@@ -77,15 +76,14 @@ pp.lg.String.prototype.concat = function(b) {
 };
 
 /**
- * @return {number}
+ * @inheritDoc
  */
 pp.lg.String.prototype.length = function() {
     return this.str_.length;
 };
 
 /**
- * @param {number} index
- * @return {pp.lg.Symbol}
+ * @inheritDoc
  */
 pp.lg.String.prototype.getSymbolAt = function(index) {
     goog.asserts.assert(index >= 0 && index < this.str_.length, 'Index out of String range');
@@ -93,8 +91,7 @@ pp.lg.String.prototype.getSymbolAt = function(index) {
 };
 
 /**
- * @param {number} k
- * @return {pp.lg.Identificable}
+ * @inheritDoc
  */
 pp.lg.String.prototype.first = function(k) {
     var ret;
@@ -121,7 +118,7 @@ pp.lg.String.prototype.first = function(k) {
 
 
 /**
- * @return {pp.lg.String}
+ * @returns {pp.lg.String}
  */
 pp.lg.String.prototype.clone = function() {
     var ret = new pp.lg.String();
@@ -134,7 +131,52 @@ pp.lg.String.prototype.clone = function() {
 };
 
 /**
- * @return {string}
+ * @inheritDoc
+ */
+pp.lg.String.prototype.equals = function(b) {
+    return this.getId() === b.getId();
+};
+
+/**
+ *
+ * @param {pp.lg.Symbol} symbol
+ * @returns {boolean}
+ */
+pp.lg.String.prototype.contains = function(symbol) {
+    var ret = false;
+
+    for (var i = 0, l = this.length(); i < l && (!ret); i++) {
+        ret = this.getSymbolAt(i).equals(symbol);
+    }
+
+    return ret;
+};
+
+/**
+ *
+ * @param {pp.lg.Symbol} symbol
+ * @returns {pp.lg.String}
+ */
+pp.lg.String.prototype.suffixAfter = function(symbol) {
+    var ret = new pp.lg.String(),
+        foundFlag = false
+    ;
+
+    for (var i = 0, l = this.length(); i < l; i++) {
+        var s = this.getSymbolAt(i);
+
+        if (foundFlag) {
+            ret.append(s);
+        } else {
+            foundFlag = symbol.equals(s);
+        }
+    }
+
+    return ret;
+};
+
+/**
+ * @inheritDoc
  */
 pp.lg.String.prototype.toString = function() {
     return '"' + this.getId() + '"';

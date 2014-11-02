@@ -11,7 +11,8 @@ goog.require('goog.asserts');
 goog.require('pp.lg.Symbol');
 goog.require('pp.lg.Rule');
 goog.require('pp.lg.Set');
-goog.require('pp.lg.FixedPointTable');
+goog.require('pp.lg.fp.First');
+goog.require('pp.lg.fp.Follow');
 
 
 /**
@@ -51,8 +52,9 @@ pp.lg.Grammar = function(P, S, T, N) {
     /**
      *
      * @type {pp.lg.Symbol}
+     * @private
      */
-    this.start = goog.asserts.assertInstanceof(this.nonTerms_.getById(S), pp.lg.Symbol, 'S is not defined in set on nonterminals');
+    this.initNonTerm_ = goog.asserts.assertInstanceof(this.getNonTermById(S), pp.lg.Symbol, 'S is not defined in set on nonterminals');
 };
 
 /**
@@ -116,7 +118,7 @@ pp.lg.Grammar.prototype.initAlphabet = function(terms, nonTerms) {
         alphabet.add(term);
         this.terms_.add(term);
     }
-
+//console.log(rightSuffix.toString(),this.k, this.G.first(rightSuffix, this.k))
     for (var j = 0, l = nonTerms.length; j < l; j++) {
         var nonTerm = new pp.lg.Symbol(nonTerms[j], false);
 
@@ -135,26 +137,35 @@ pp.lg.Grammar.prototype.initAlphabet = function(terms, nonTerms) {
 };
 
 /**
- * @param {string} str
+ * @param {string|pp.lg.String} str
  * @param {number} k
  * @return {pp.lg.Set}
  */
 pp.lg.Grammar.prototype.first = function(str, k) {
     goog.asserts.assert(k >= 0, 'k should be >= 0');
 
-    var alpha = new pp.lg.String(str, this.alphabet_),
+    var alpha = goog.isString(str) ? new pp.lg.String(str, this.alphabet_) : str,
         firsts = [],
-        fixedPointTable = new pp.lg.FixedPointTable(this, alpha, k)
+        firstFixedPoint = new pp.lg.fp.First(this, k, alpha)
     ;
 
     for (var i = 0, len = alpha.length(); i < len; i++) {
-        firsts.push(this.firstOfSymbol(alpha.getSymbolAt(i), fixedPointTable));
+        firsts.push(this.firstOfSymbol(alpha.getSymbolAt(i), firstFixedPoint));
     }
 
-    var ret = firsts[0];
+    var len = firsts.length,
+        ret
+    ;
 
-    for (var j = 1, len = firsts.length; j < len; j++) {
-        ret = ret.kConcat(firsts[j], k);
+    if (len > 0) {
+        ret = firsts[0];
+
+        for (var j = 1; j < len; j++) {
+            ret = ret.kConcat(firsts[j], k);
+        }
+    } else {
+        ret = new pp.lg.Set();
+        ret.add(null);
     }
 
     return ret;
@@ -163,18 +174,18 @@ pp.lg.Grammar.prototype.first = function(str, k) {
 /**
  *
  * @param {pp.lg.Symbol} symbol
- * @param {pp.lg.FixedPointTable} fixedPointTable
+ * @param {pp.lg.fp.First} firstFixedPoint
  * @return {pp.lg.Set}
  * @private
  */
-pp.lg.Grammar.prototype.firstOfSymbol = function(symbol, fixedPointTable) {
+pp.lg.Grammar.prototype.firstOfSymbol = function(symbol, firstFixedPoint) {
     var ret;
 
     if (symbol.isTerminal()) {
         ret = new pp.lg.Set();
         ret.add(symbol);
     } else {
-        ret = fixedPointTable.get(symbol);
+        ret = firstFixedPoint.get(symbol);
     }
 
     return ret;
@@ -187,26 +198,59 @@ pp.lg.Grammar.prototype.firstOfSymbol = function(symbol, fixedPointTable) {
  * @return {pp.lg.Set}
  */
 pp.lg.Grammar.prototype.follow = function(nonTermId, k) {
-    var nonTerm = goog.asserts.assertInstanceof(this.nonTerms_.getById(nonTermId), pp.lg.Symbol, nonTermId + ' is not in nonterminals set');
-
-
+    var followFixedPoint = new pp.lg.fp.Follow(this, k, nonTermId);
+    return followFixedPoint.get(this.getNonTermById(nonTermId));
 };
 
 /**
  *
- * @param leftTerm
+ * @param {pp.lg.Identificable} leftTerm
  * @return {!Array.<pp.lg.Rule>}
  */
 pp.lg.Grammar.prototype.getRulesWithLeftEqual = function(leftTerm) {
-    var ret = [];
+    var filter = goog.bind(function(left, rule) {
+        return rule.getLeft().equals(left);
+    }, this, leftTerm);
 
-    for (var i = 0, len = this.rules_.length; i < len; i++) {
-        var rule = this.rules_[i];
-
-        if (rule.leftIsEqual(leftTerm)) {
-            ret.push(rule);
-        }
-    }
-
-    return ret;
+    return goog.array.filter(this.rules_, filter);
 };
+
+/**
+ *
+ * @param {pp.lg.Symbol} symbol
+ * @returns {!Array.<pp.lg.Rule>}
+ */
+pp.lg.Grammar.prototype.getRulesRightContains = function(symbol) {
+    var filter = goog.bind(function(symbol, rule) {
+        return rule.getRight().contains(symbol);
+    }, this, symbol);
+//console.log(symbol.toString(), goog.array.filter(this.rules_, filter))
+    return goog.array.filter(this.rules_, filter);
+};
+
+
+/**
+ * @param {string} nonTermId
+ * @returns {pp.lg.Symbol}
+ */
+pp.lg.Grammar.prototype.getNonTermById = function(nonTermId) {
+    return /** @type pp.lg.Symbol */ (this.nonTerms_.getById(nonTermId));
+};
+
+/**
+ * @param {pp.lg.Symbol} nonTerm
+ * @returns {boolean}
+ */
+pp.lg.Grammar.prototype.isInitNonTerm = function(nonTerm) {
+    return this.initNonTerm_.equals(nonTerm);
+};
+
+/**
+ * @return {boolean}
+ */
+pp.lg.Grammar.prototype.isReduced = goog.abstractMethod;
+
+/**
+ * @return {boolean}
+ */
+pp.lg.Grammar.prototype.isNormalized = goog.abstractMethod;

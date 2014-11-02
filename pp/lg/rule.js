@@ -29,12 +29,10 @@ pp.lg.Rule = function(left, right) {
 };
 
 /**
- *
- * @param {pp.lg.Identificable} left
- * @return {boolean}
+ * @return {pp.lg.String}
  */
-pp.lg.Rule.prototype.leftIsEqual = function(left) {
-    return this.left_.getId() === left.getId();
+pp.lg.Rule.prototype.getLeft = function() {
+    return this.left_;
 };
 
 /**
