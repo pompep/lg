@@ -24,7 +24,7 @@ pp.lg.String = function(str, alphabet) {
     if (goog.isString(str)) {
         if (alphabet instanceof pp.lg.Set) {
             for (var i = 0, len = str.length; i < len; i++) {
-                this.append(alphabet.getById(str[i]));
+                this.append(goog.asserts.assertInstanceof(alphabet.getById(str[i]), pp.lg.Symbol, str[i] + ' is not in alphabet ' + alphabet.toString()));
             }
         } else {
             goog.asserts.fail('No valid aplhabet passed to pp.lg.String constructor with initialize string');
@@ -59,12 +59,9 @@ pp.lg.String.prototype.getId = function() {
  * @inheritDoc
  */
 pp.lg.String.prototype.concat = function(b) {
-    var ret;
+    var ret = this.clone();
 
-    if (goog.isNull(b)) {
-        ret = new pp.lg.String();
-        ret.append(b);
-    } else {
+    if (!goog.isNull(b)) {
         ret = this.clone();
 
         for (var i = 0, len = b.length(); i < len; i++) {
@@ -86,8 +83,12 @@ pp.lg.String.prototype.length = function() {
  * @inheritDoc
  */
 pp.lg.String.prototype.getSymbolAt = function(index) {
-    goog.asserts.assert(index >= 0 && index < this.str_.length, 'Index out of String range');
-    return this.str_[index];
+    // goog.asserts.assert(index >= 0 && index < this.str_.length, 'Index out of String range: ['+index+'] of ' + this.getId());
+    if (index < this.length()) {
+        return this.str_[index];
+    } else {
+        return null;
+    }
 };
 
 /**

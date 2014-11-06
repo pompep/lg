@@ -75,7 +75,9 @@ pp.lg.Grammar.prototype.lrSeparator = '->';
  * @returns {!Array.<pp.lg.Rule>}
  */
 pp.lg.Grammar.prototype.initRules = function(ruleStrs) {
-    var rules = [];
+    var rules = [],
+        ruleId = 0
+    ;
     
     for (var i = 0, len = ruleStrs.length; i < len; i++) {
         var rule = ruleStrs[i],
@@ -94,7 +96,7 @@ pp.lg.Grammar.prototype.initRules = function(ruleStrs) {
         var left = new pp.lg.String(left_rights[0], this.alphabet_);
 
         for (var j = 0, l= rights.length; j < l; j++) {
-            rules.push(new pp.lg.Rule(left, new pp.lg.String(rights[j], this.alphabet_)));
+            rules.push(new pp.lg.Rule(left, new pp.lg.String(rights[j], this.alphabet_), ++ruleId));
         }
     }
 
@@ -246,9 +248,37 @@ pp.lg.Grammar.prototype.isInitNonTerm = function(nonTerm) {
 };
 
 /**
+ *
+ * @param {number} k
+ * @return {!Array.<pp.lg.Set>}
+ */
+pp.lg.Grammar.prototype.sll = function(k) {
+    var ret = [];
+
+    for (var i = 0, len = this.rules_.length; i < len; i++) {
+        var rule = this.rules_[i],
+            fi = this.first(rule.getRight(), k),
+            fo = this.follow(rule.getLeft().getId(), k),
+            fifo = fi.kConcat(fo, k)
+        ;
+
+        console.log(i+1, fi.toString(), fo.toString(), fifo.toString());
+        ret.push(fifo)
+    }
+
+
+    return ret;
+};
+
+/**
  * @return {boolean}
  */
 pp.lg.Grammar.prototype.isReduced = goog.abstractMethod;
+
+/**
+ * @return {pp.lg.Grammar} new reduced grammar
+ */
+pp.lg.Grammar.prototype.reduce = goog.abstractMethod;
 
 /**
  * @return {boolean}

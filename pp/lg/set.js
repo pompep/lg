@@ -188,10 +188,12 @@ pp.lg.Set.prototype.contains = function(element) {
 };
 
 pp.lg.Set.prototype.toString = function() {
-    var ret = '{';
+    var ret = '{',
+        i = 0
+    ;
 
     for (var id in this.set_) {
-        ret += id + ','
+        ret += (i++ > 0 ? ',' : '') + '\'' + id + '\'';
     }
 
     ret += '}';

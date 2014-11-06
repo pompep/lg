@@ -76,13 +76,11 @@ pp.lg.fp.Table.prototype.iterationStep = function() {
         ;
 
         ret = ret || changed;
-        //if (this instanceof pp.lg.fp.Follow) {
-        //    console.log(this.getDebugTitle(), id, 'compute', e.getResult().toString(), changed);
-        //}
+//        console.log(this.getDebugTitle(), id, 'compute', e.getResult().toString(), changed);
     }
 
     return ret;
-};
+}
 
 /**
  * @private

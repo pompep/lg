@@ -11,9 +11,15 @@ goog.require('pp.lg.String');
  *
  * @param {pp.lg.String} left
  * @param {pp.lg.String} right
+ * @param {number} right
  * @constructor
  */
-pp.lg.Rule = function(left, right) {
+pp.lg.Rule = function(left, right, id) {
+    /**
+     * @type {number}
+     * @private
+     */
+    this.id_ = id;
 
     /**
      * @type {pp.lg.String}
@@ -46,5 +52,5 @@ pp.lg.Rule.prototype.getRight = function() {
  * @return {string}
  */
 pp.lg.Rule.prototype.toString = function() {
-    return this.left_.getId() + '->' + this.right_.getId();
+    return '(' + this.id_ + '): ' + this.left_.getId() + '->' + this.right_.getId();
 };
